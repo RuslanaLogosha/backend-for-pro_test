@@ -7,8 +7,7 @@
     "start:dev": "cross-env NODE_ENV=development nodemon ./bin/server.js",
     "lint": "eslint **/*.{js,json}",
     "lint:fix": "eslint --fix **/*.{js,json}",
-    "dev:debug": "node --inspect ./bin/server.js",
-    "heroku-postbuild": "npm run build"
+    "dev:debug": "node --inspect ./bin/server.js"
   },
   "engines": {
     "node": "14.x",
