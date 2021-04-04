@@ -2,7 +2,7 @@ const TechQuiz = require('../model/quiz-tech-model');
 const { HttpCode, Status } = require('../helpers/constants');
 const { getRandomInt } = require('../helpers/get-random-integer');
 
-async function getAll(req, res, next) {
+async function getRandomTechQuestions(req, res, next) {
   try {
     // const userId = req.user.id;
 
@@ -10,7 +10,7 @@ async function getAll(req, res, next) {
     const allQuestions = await TechQuiz.getAllQuestions();
 
     // forming a list of 12 random questions
-    let randomQuestions = [];
+    const randomQuestions = [];
 
     do {
       const randomIndex = getRandomInt(0, 25);
@@ -41,6 +41,34 @@ async function getAll(req, res, next) {
   }
 }
 
+async function getTechResults(req, res, next) {
+  try {
+    // accepting results as send by front-end
+    const resultsToCheck = req.body;
+
+    // checking results
+    const checkedResults = await Promise.all(
+      resultsToCheck.map(async el => {
+        const question = await TechQuiz.findById(el.questionId);
+        const checkedAnswer = question.rightAnswer === el.answer;
+        return {
+          questionId: el.questionId,
+          result: checkedAnswer,
+        };
+      }),
+    );
+
+    return res.status(HttpCode.OK).json({
+      status: Status.SUCCESS,
+      code: HttpCode.OK,
+      data: checkedResults,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
-  getAll,
+  getRandomTechQuestions,
+  getTechResults,
 };
