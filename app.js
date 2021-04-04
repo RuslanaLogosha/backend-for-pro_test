@@ -21,8 +21,6 @@ app.use('/users', usersRouter);
 app.use('/techquiz', techQuizRouter);
 app.use('/theoryquiz', theoryQuizRouter);
 
-app.use(express.static(path.join(__dirname + '/public')));
-
 app.get('/', (req, res) => {
   res.send('Hello from Express!');
 });
