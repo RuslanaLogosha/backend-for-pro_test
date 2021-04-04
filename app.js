@@ -21,6 +21,10 @@ app.use('/users', usersRouter);
 app.use('/techquiz', techQuizRouter);
 app.use('/theoryquiz', theoryQuizRouter);
 
+app.get('/', (req, res) => {
+  res.send('Hello from Express!');
+});
+
 app.use((_req, res) => {
   res.status(HttpCode.NOT_FOUND).json({ message: 'Not found' });
 });
