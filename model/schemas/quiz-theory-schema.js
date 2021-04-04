@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const TechQuizSchema = new Schema({
+const TheoryQuizSchema = new Schema({
   question: {
     type: String,
   },
@@ -16,6 +16,6 @@ const TechQuizSchema = new Schema({
   },
 });
 
-const TechQuiz = model('techQuiz', TechQuizSchema);
+const TheoryQuiz = model('theoryQuiz', TheoryQuizSchema);
 
-module.exports = TechQuiz;
+module.exports = TheoryQuiz;

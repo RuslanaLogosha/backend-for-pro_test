@@ -4,7 +4,8 @@ const cors = require('cors');
 const { HttpCode } = require('./helpers/constants');
 
 const usersRouter = require('./routes/users');
-const techQuizRouter = require('./routes/quiz');
+const techQuizRouter = require('./routes/tech-quiz');
+const theoryQuizRouter = require('./routes/theory-quiz');
 
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/users', usersRouter);
 app.use('/techquiz', techQuizRouter);
+app.use('/theoryquiz', theoryQuizRouter);
 
 app.use((_req, res) => {
   res.status(HttpCode.NOT_FOUND).json({ message: 'Not found' });
