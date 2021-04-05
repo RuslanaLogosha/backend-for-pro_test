@@ -3,6 +3,9 @@ const logger = require('morgan');
 const cors = require('cors');
 const { HttpCode } = require('./helpers/constants');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../../swagger.json');
+
 const usersRouter = require('./routes/users');
 const techQuizRouter = require('./routes/tech-quiz');
 const theoryQuizRouter = require('./routes/theory-quiz');
@@ -20,6 +23,8 @@ app.use(express.json());
 app.use('/users', usersRouter);
 app.use('/techquiz', techQuizRouter);
 app.use('/theoryquiz', theoryQuizRouter);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
   res.send('Hello from Express!');
