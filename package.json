@@ -36,7 +36,8 @@
     "node-fetch": "2.6.1",
     "npm": "^7.6.3",
     "passport": "0.4.1",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.13.10",

@@ -2,7 +2,6 @@ const Joi = require('joi');
 const { HttpCode } = require('../../helpers/constants');
 
 const schemaCreateUser = Joi.object({
-  name: Joi.string().min(2).max(50).optional(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(50).required(),
 });
