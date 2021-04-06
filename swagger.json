@@ -12,7 +12,7 @@
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "servers": [
-    { "url": "https://backend-for-pro-test.herokuapp.com/api-docs" },
+    { "url": "https://backend-for-pro-test.herokuapp.com" },
     { "url": "http://localhost:3000" }
   ],
   "tags": [
