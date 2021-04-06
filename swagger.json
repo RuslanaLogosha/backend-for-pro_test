@@ -17,14 +17,14 @@
   ],
   "tags": [
     {
-      "name": "Users",
+      "name": "User",
       "description": "Authorization endpoints"
     }
   ],
   "paths": {
     "/users/auth/register": {
       "post": {
-        "tags": ["Users"],
+        "tags": ["User"],
         "summary": "User registration",
         "parameters": [],
         "security": [{ "Bearer": [] }],
@@ -63,7 +63,7 @@
     },
     "/users/auth/login": {
       "post": {
-        "tags": ["Users"],
+        "tags": ["User"],
         "summary": "User login",
         "parameters": [],
         "requestBody": {
@@ -101,7 +101,7 @@
     },
     "/users/auth/logout": {
       "post": {
-        "tags": ["Users"],
+        "tags": ["User"],
         "summary": "User logout",
         "parameters": [],
         "security": [{ "Bearer": [] }],
@@ -119,7 +119,7 @@
     },
     "/users/current": {
       "get": {
-        "tags": ["Users"],
+        "tags": ["User"],
         "summary": "Current user",
         "parameters": [],
         "security": [{ "Bearer": [] }],

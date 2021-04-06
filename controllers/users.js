@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 const register = async (req, res, next) => {
   try {
-    const { email, name } = req.body;
+    const { email } = req.body;
     const user = await Users.findByEmail(email);
     if (user) {
       return res.status(HttpCode.CONFLICT).json({
@@ -26,7 +26,6 @@ const register = async (req, res, next) => {
       code: HttpCode.CREATED,
       data: {
         user: {
-          name: newUser.name,
           email: newUser.email,
         },
       },
