@@ -4,7 +4,7 @@ const cors = require('cors');
 const { HttpCode } = require('./helpers/constants');
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../../swagger.json');
+const swaggerDocument = require('./swagger.json');
 
 const usersRouter = require('./routes/users');
 const techQuizRouter = require('./routes/tech-quiz');
