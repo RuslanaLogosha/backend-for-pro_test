@@ -58,10 +58,16 @@ async function getTheoryResults(req, res, next) {
       }),
     );
 
+    // counting correct answers
+    const correctAnswersCount = checkedResults.filter(el => el.result === true);
+
     return res.status(HttpCode.OK).json({
       status: Status.SUCCESS,
       code: HttpCode.OK,
-      data: checkedResults,
+      data: {
+        totalAnswersCount: String(checkedResults.length),
+        correctAnswersCount: String(correctAnswersCount.length),
+      },
     });
   } catch (e) {
     next(e);

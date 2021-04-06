@@ -19,6 +19,14 @@
     {
       "name": "User",
       "description": "Authorization endpoints"
+    },
+    {
+      "name": "TechQuiz",
+      "description": "Technical test endpoints"
+    },
+    {
+      "name": "TheoryQuiz",
+      "description": "Theoretical test endpoints"
     }
   ],
   "paths": {
@@ -44,18 +52,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
+                  "$ref": "#/components/schemas/UserResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
+            "description": "Bad request (invalid request body)"
           },
           "409": {
-            "description": "Provided email already exists",
-            "content": {}
+            "description": "Provided email already exists"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -82,18 +91,19 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
+                  "$ref": "#/components/schemas/UserResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
+            "description": "Bad request (invalid request body)"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -106,12 +116,13 @@
         "security": [{ "Bearer": [] }],
         "responses": {
           "204": {
-            "description": "Successful operation",
-            "content": {}
+            "description": "Successful operation"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -134,12 +145,139 @@
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
+            "description": "Bad request (invalid request body)"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/techquiz/questions": {
+      "get": {
+        "tags": ["TechQuiz"],
+        "summary": "Retreival of 12 random questions",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizQuestionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/techquiz/results": {
+      "post": {
+        "tags": ["TechQuiz"],
+        "summary": "Test results check",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Login's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizCheckResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/theoryquiz/questions": {
+      "get": {
+        "tags": ["TheoryQuiz"],
+        "summary": "Retreival of 12 random questions",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizQuestionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/theoryquiz/results": {
+      "post": {
+        "tags": ["TheoryQuiz"],
+        "summary": "Test results check",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Login's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizCheckResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -163,19 +301,20 @@
           }
         }
       },
-      "RegistrationResponse": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "email": {
-              "type": "string",
-              "description": "User's email",
-              "format": "email"
+      "CurrentUserResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              }
             }
           }
-        },
-        "example": [{ "email": "1@gmail.com" }, { "email": "2@gmail.com" }]
+        }
       },
       "LoginRequest": {
         "type": "object",
@@ -193,33 +332,80 @@
           }
         }
       },
-      "LoginResponse": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "email": {
-              "type": "string",
-              "description": "User's email",
-              "format": "email"
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "User's token"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              }
             }
           }
-        },
-        "example": [{ "email": "1@gmail.com" }, { "email": "2@gmail.com" }]
+        }
       },
-      "CurrentUserResponse": {
+      "QuizQuestionsResponse": {
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
-            "email": {
-              "type": "string",
-              "description": "User's email",
-              "format": "email"
-            }
+            "questionId": { "type": "string" },
+            "question": { "type": "string" },
+            "answers": { "type": "string" }
           }
         },
-        "example": [{ "email": "1@gmail.com" }, { "email": "2@gmail.com" }]
+        "example": [
+          {
+            "questionId": "1",
+            "question": "Hello?",
+            "answers": "[world, bunny, javascript]"
+          },
+          {
+            "questionId": "6",
+            "question": "What is the answer to the Ultimate Question of Life, the Universe, and Everything",
+            "answers": "[javascript, 42, cookies]"
+          }
+        ]
+      },
+      "QuizCheckRequest": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "questionId": { "type": "string" },
+            "userAnswer": { "type": "string" }
+          }
+        },
+        "example": [
+          {
+            "questionId": "1",
+            "userAnswer": "world"
+          },
+          {
+            "questionId": "6",
+            "userAnswer": "javascript"
+          }
+        ]
+      },
+      "QuizCheckResponse": {
+        "type": "object",
+        "properties": {
+          "totalAnswers": {
+            "type": "string",
+            "description": "Count of total answers"
+          },
+          "correctAnswers": {
+            "type": "string",
+            "description": "Count of correct answers"
+          }
+        }
       }
     },
     "securitySchemes": {
