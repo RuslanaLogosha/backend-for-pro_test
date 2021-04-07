@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 const register = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, password } = req.body;
     const user = await Users.findByEmail(email);
     if (user) {
       return res.status(HttpCode.CONFLICT).json({
@@ -21,10 +21,25 @@ const register = async (req, res, next) => {
     const newUser = await Users.create({
       ...req.body,
     });
+    const regUser = await Users.findByEmail(email);
+    const isValidPassword = await regUser.validPassword(password);
+    if (!regUser || !isValidPassword) {
+      return res.status(HttpCode.UNAUTHORIZED).json({
+        status: Status.ERROR,
+        code: HttpCode.UNAUTHORIZED,
+        data: 'Unauthorized',
+        message: 'Email or password is wrong',
+      });
+    }
+    const id = regUser._id;
+    const payload = { id };
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '5h' });
+    await Users.updateToken(id, token);
     return res.status(HttpCode.CREATED).json({
       status: Status.SUCCESS,
       code: HttpCode.CREATED,
       data: {
+        token,
         user: {
           email: newUser.email,
         },
@@ -50,7 +65,7 @@ const login = async (req, res, next) => {
     }
     const id = user._id;
     const payload = { id };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2h' });
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '5h' });
     await Users.updateToken(id, token);
     return res.status(HttpCode.OK).json({
       status: Status.SUCCESS,

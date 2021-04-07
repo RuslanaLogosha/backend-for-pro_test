@@ -60,6 +60,9 @@
           "400": {
             "description": "Bad request (invalid request body)"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "409": {
             "description": "Provided email already exists"
           },
