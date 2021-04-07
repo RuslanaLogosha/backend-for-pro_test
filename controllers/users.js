@@ -122,6 +122,13 @@ const refreshTokenPair = async (req, res, next) => {
       // deleting current session & creating a new one with new pair of tokens
       await Session.findByIdAndDelete(payload.sessionId);
 
+      // clearing all sessions in user has more than 3 sessions upon refresh request
+      const userSessions = await Session.find({ userId: user._id });
+      if (userSessions.length > 3) {
+        await Session.deleteMany({ userId: user._id });
+        console.log('yay deleted');
+      }
+
       const newSession = await Session.create({
         userId: user._id,
       });
