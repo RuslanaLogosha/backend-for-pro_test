@@ -15,5 +15,6 @@ router.post(
 router.post('/auth/login', validate.loginUser, userController.login);
 router.post('/auth/logout', guard, userController.logout);
 router.get('/current', guard, userController.getCurrentUser);
+router.post('/auth/refresh', userController.refreshTokenPair);
 
 module.exports = router;
