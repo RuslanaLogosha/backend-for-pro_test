@@ -126,7 +126,6 @@ const refreshTokenPair = async (req, res, next) => {
       const userSessions = await Session.find({ userId: user._id });
       if (userSessions.length > 3) {
         await Session.deleteMany({ userId: user._id });
-        console.log('yay deleted');
       }
 
       const newSession = await Session.create({
@@ -210,8 +209,23 @@ const login = async (req, res, next) => {
 };
 
 const logout = async (req, res, next) => {
-  const id = req.user._id;
-  await Users.updateToken(id, null);
+  const userId = req.user._id;
+  const sessionId = req.session._id;
+
+  console.log(userId);
+  console.log(sessionId);
+
+  // deleting current session
+  await Session.findByIdAndDelete(sessionId);
+
+  // clearing all sessions in user has more than 3 sessions upon logous
+  const userSessions = await Session.find({ userId });
+
+  if (userSessions.length > 3) {
+    await Session.deleteMany({ userId });
+  }
+
+  await Users.updateToken(userId, null);
   return res.status(HttpCode.NO_CONTENT).json({});
 };
 
