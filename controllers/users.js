@@ -138,7 +138,7 @@ const refreshTokenPair = async (req, res, next) => {
           expiresIn: '30m',
         },
       );
-      const newRefreshToken = jwt.sign(
+      const refreshToken = jwt.sign(
         { userId: user._id, sessionId: newSession._id },
         process.env.JWT_SECRET,
         { expiresIn: '30d' },
@@ -149,7 +149,7 @@ const refreshTokenPair = async (req, res, next) => {
         code: HttpCode.OK,
         data: {
           token,
-          newRefreshToken,
+          refreshToken,
           sessionId: newSession._id,
         },
       });
