@@ -111,6 +111,48 @@
         }
       }
     },
+    "/users/auth/refresh": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Get new pair of tokens (use Bearer {refreshToken} instead of accessToken)",
+        "parameters": [],
+        "requestBody": {
+          "description": "Object containing session id",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request "
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/users/auth/logout": {
       "post": {
         "tags": ["User"],
@@ -340,7 +382,15 @@
         "properties": {
           "token": {
             "type": "string",
-            "description": "User's token"
+            "description": "User's access token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "User's refresh token"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "User's current session id"
           },
           "user": {
             "type": "object",
@@ -351,6 +401,33 @@
                 "format": "email"
               }
             }
+          }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "required": ["sessionId"],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "User's session id"
+          }
+        }
+      },
+      "RefreshResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "User's access token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "User's refresh token"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "User's current session id"
           }
         }
       },
