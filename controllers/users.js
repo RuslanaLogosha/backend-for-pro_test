@@ -6,6 +6,7 @@ const Session = require('../model/schemas/session-schema');
 require('dotenv').config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
+const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET;
 
 const register = async (req, res, next) => {
   try {
@@ -42,7 +43,7 @@ const register = async (req, res, next) => {
     const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
       expiresIn: '30m',
     });
-    const refreshToken = jwt.sign({ userId, sessionId }, SECRET_KEY, {
+    const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
       expiresIn: '30d',
     });
     await Users.updateToken(userId, token);
@@ -86,7 +87,7 @@ const refreshTokenPair = async (req, res, next) => {
       // refusing to refresh token pair if refresh token is invalid/expired
       let payload;
       try {
-        payload = jwt.verify(reqRefreshToken, process.env.JWT_SECRET);
+        payload = jwt.verify(reqRefreshToken, REFRESH_SECRET_KEY);
       } catch (err) {
         await Session.findByIdAndDelete(req.body.sessionId);
         return res.status(HttpCode.UNAUTHORIZED).json({
@@ -133,14 +134,14 @@ const refreshTokenPair = async (req, res, next) => {
       });
       const token = jwt.sign(
         { userId: user._id, sessionId: newSession._id },
-        process.env.JWT_SECRET,
+        SECRET_KEY,
         {
           expiresIn: '30m',
         },
       );
       const refreshToken = jwt.sign(
         { userId: user._id, sessionId: newSession._id },
-        process.env.JWT_SECRET,
+        REFRESH_SECRET_KEY,
         { expiresIn: '30d' },
       );
       await Users.updateToken({ _id: user._id }, token);
@@ -187,7 +188,7 @@ const login = async (req, res, next) => {
     const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
       expiresIn: '30m',
     });
-    const refreshToken = jwt.sign({ userId, sessionId }, SECRET_KEY, {
+    const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
       expiresIn: '30d',
     });
     await Users.updateToken(userId, token);
