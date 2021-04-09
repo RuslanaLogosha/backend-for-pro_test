@@ -26,7 +26,7 @@ app.use('/theoryquiz', theoryQuizRouter);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Hello from Express!');
 });
 
