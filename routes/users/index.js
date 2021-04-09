@@ -14,7 +14,12 @@ router
     createAccountLimiter,
     validate.createUser,
     userController.register,
-  );
+  )
+  .post(
+  '/auth/refresh',
+  validate.refreshToken,
+  userController.refreshTokenPair,
+);
 
 router
   .get('/current', guard, userController.getCurrentUser)

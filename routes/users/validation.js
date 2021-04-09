@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const mongoose = require('mongoose');
 const { HttpCode } = require('../../helpers/constants');
 
 const schemaCreateUser = Joi.object({
@@ -9,6 +10,20 @@ const schemaCreateUser = Joi.object({
 const schemaLoginUser = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(50).required(),
+});
+
+const schemaRefreshToken = Joi.object({
+  sessionId: Joi.string()
+    .custom((value, helpers) => {
+      const isValidObjectId = mongoose.Types.ObjectId.isValid(value);
+      if (!isValidObjectId) {
+        return helpers.message({
+          custom: "Invalid 'sessionId'. Must be a MongoDB ObjectId",
+        });
+      }
+      return value;
+    })
+    .required(),
 });
 
 const validate = (schema, obj, next) => {
@@ -29,4 +44,8 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.loginUser = (req, res, next) => {
   return validate(schemaLoginUser, req.body, next);
+};
+
+module.exports.refreshToken = (req, res, next) => {
+  return validate(schemaRefreshToken, req.body, next);
 };
