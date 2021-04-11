@@ -294,11 +294,61 @@ const googleRedirect = async (req, res, next) => {
         Authorization: `Bearer ${tokenData.data.access_token}`,
       },
     });
-    console.log(userData.data);
+    // console.log(userData.data);
 
-    return res.redirect(
-      `${process.env.FRONTEND_URL}?email=${userData.data.email}`,
-    );
+    // check user emeil
+    const { email } = userData.data;
+    const user = await Users.findByEmail(email);
+
+    // login, if DB has this email
+    if (user) {
+      const isValidPassword = await user.validPassword(
+        process.env.GOOGLE_AUTH_PASSWORD,
+      );
+      if (!isValidPassword) {
+        return res.status(HttpCode.UNAUTHORIZED).json({
+          status: Status.ERROR,
+          code: HttpCode.UNAUTHORIZED,
+          data: 'Unauthorized',
+          message: 'Email or password is wrong',
+        });
+      }
+      const userId = user._id;
+      const newSession = await Session.create({ userId });
+      const sessionId = newSession._id;
+      const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
+        expiresIn: '30m',
+      });
+      const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
+        expiresIn: '30d',
+      });
+      await Users.updateToken(userId, token);
+
+      return res.redirect(
+        `${process.env.FRONTEND_URL}?user=${user.email}&token=${token}&refreshToken=${refreshToken}&sid=${sessionId}`,
+      );
+      //  registration new user, if BD don't have this email
+    } else {
+      const newUser = await Users.create({
+        email,
+        password: process.env.GOOGLE_AUTH_PASSWORD,
+      });
+      const regUser = await Users.findByEmail(email);
+      const userId = regUser._id;
+      const newSession = await Session.create({ userId });
+      const sessionId = newSession._id;
+      const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
+        expiresIn: '30m',
+      });
+      const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
+        expiresIn: '30d',
+      });
+      await Users.updateToken(userId, token);
+      
+      return res.redirect(
+        `${process.env.FRONTEND_URL}?user=${newUser.email}&token=${token}&refreshToken=${refreshToken}&sid=${sessionId}`,
+      );
+    }
   } catch (e) {
     next(e);
   }
