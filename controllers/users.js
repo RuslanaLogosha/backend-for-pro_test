@@ -10,10 +10,27 @@ require('dotenv').config();
 const SECRET_KEY = process.env.JWT_SECRET;
 const REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET;
 
+const createSessionAndIssueTokens = async userId => {
+  // creating a new session
+  const newSession = await Session.create({ userId });
+  const sessionId = newSession._id;
+  // creating token pair. access token is stored in User. refresh token is not stored
+  const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
+    expiresIn: '30m',
+  });
+  const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
+    expiresIn: '30d',
+  });
+  await Users.updateToken(userId, token);
+  return { token, refreshToken, sessionId };
+};
+
 const register = async (req, res, next) => {
   try {
     const { email } = req.body;
+    // checking whether user is already registered
     const user = await Users.findByEmail(email);
+    // throwing 409 if user is already in db
     if (user) {
       return res.status(HttpCode.CONFLICT).json({
         status: Status.ERROR,
@@ -22,33 +39,19 @@ const register = async (req, res, next) => {
         message: 'Email is used',
       });
     }
+    // creating user in db
     const newUser = await Users.create({
       ...req.body,
     });
     const regUser = await Users.findByEmail(email);
-    // const isValidPassword = await regUser.validPassword(password);
-    // if (!regUser || !isValidPassword) {
-    //   return res.status(HttpCode.UNAUTHORIZED).json({
-    //     status: Status.ERROR,
-    //     code: HttpCode.UNAUTHORIZED,
-    //     data: 'Unauthorized',
-    //     message: 'Email or password is wrong',
-    //   });
-    // }
-
+    // creating session and issuing tokens
     const userId = regUser._id;
-    // creating a new session
-    const newSession = await Session.create({ userId });
-    const sessionId = newSession._id;
-    // const payload = { id };
-    // creating token pair. access token is stored in Urer. refresh token - ???
-    const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
-      expiresIn: '30m',
-    });
-    const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
-      expiresIn: '30d',
-    });
-    await Users.updateToken(userId, token);
+    const {
+      token,
+      refreshToken,
+      sessionId,
+    } = await createSessionAndIssueTokens(userId);
+    // returning successful result
     return res.status(HttpCode.CREATED).json({
       status: Status.SUCCESS,
       code: HttpCode.CREATED,
@@ -99,7 +102,6 @@ const refreshTokenPair = async (req, res, next) => {
           message: 'Unauthorized',
         });
       }
-
       // fetching user & session from db & throwing errors if they are not found
       const user = await Users.findById(payload.userId);
       const session = await Session.findById(payload.sessionId);
@@ -121,43 +123,32 @@ const refreshTokenPair = async (req, res, next) => {
           },
         });
       }
-
       // deleting current session & creating a new one with new pair of tokens
       await Session.findByIdAndDelete(payload.sessionId);
-
       // clearing all sessions in user has more than 3 sessions upon refresh request
       const userSessions = await Session.find({ userId: user._id });
       if (userSessions.length > 3) {
         await Session.deleteMany({ userId: user._id });
       }
-
-      const newSession = await Session.create({
-        userId: user._id,
-      });
-      const token = jwt.sign(
-        { userId: user._id, sessionId: newSession._id },
-        SECRET_KEY,
-        {
-          expiresIn: '30m',
-        },
-      );
-      const refreshToken = jwt.sign(
-        { userId: user._id, sessionId: newSession._id },
-        REFRESH_SECRET_KEY,
-        { expiresIn: '30d' },
-      );
-      await Users.updateToken({ _id: user._id }, token);
+      // creating session and issuing tokens
+      const userId = user._id;
+      const {
+        token,
+        refreshToken,
+        sessionId,
+      } = await createSessionAndIssueTokens(userId);
+      // returning successful result
       return res.status(HttpCode.OK).json({
         status: Status.SUCCESS,
         code: HttpCode.OK,
         data: {
           token,
           refreshToken,
-          sessionId: newSession._id,
+          sessionId,
         },
       });
     }
-
+    //  throwing 400 if there is no authorization in header
     return res.status(HttpCode.BAD_REQUEST).json({
       status: Status.ERROR,
       code: HttpCode.BAD_REQUEST,
@@ -173,6 +164,7 @@ const refreshTokenPair = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    // checking if we have user in db and if password is correct. Throwing 401 if not.
     const user = await Users.findByEmail(email);
     const isValidPassword = await user.validPassword(password);
     if (!user || !isValidPassword) {
@@ -183,17 +175,14 @@ const login = async (req, res, next) => {
         message: 'Email or password is wrong',
       });
     }
+    // creating session and issuing tokens
     const userId = user._id;
-    const newSession = await Session.create({ userId });
-    const sessionId = newSession._id;
-    // const payload = { id };
-    const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
-      expiresIn: '30m',
-    });
-    const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
-      expiresIn: '30d',
-    });
-    await Users.updateToken(userId, token);
+    const {
+      token,
+      refreshToken,
+      sessionId,
+    } = await createSessionAndIssueTokens(userId);
+    // returning successful result
     return res.status(HttpCode.OK).json({
       status: Status.SUCCESS,
       code: HttpCode.OK,
@@ -214,20 +203,13 @@ const login = async (req, res, next) => {
 const logout = async (req, res, next) => {
   const userId = req.user._id;
   const sessionId = req.session._id;
-
-  console.log(userId);
-  console.log(sessionId);
-
   // deleting current session
   await Session.findByIdAndDelete(sessionId);
-
   // clearing all sessions in user has more than 3 sessions upon logous
   const userSessions = await Session.find({ userId });
-
   if (userSessions.length > 3) {
     await Session.deleteMany({ userId });
   }
-
   await Users.updateToken(userId, null);
   return res.status(HttpCode.NO_CONTENT).json({});
 };
@@ -294,12 +276,9 @@ const googleRedirect = async (req, res, next) => {
         Authorization: `Bearer ${tokenData.data.access_token}`,
       },
     });
-    // console.log(userData.data);
-
     // check user emeil
     const { email } = userData.data;
     const user = await Users.findByEmail(email);
-
     // login, if DB has this email
     if (user) {
       const isValidPassword = await user.validPassword(
@@ -313,16 +292,13 @@ const googleRedirect = async (req, res, next) => {
           message: 'Email or password is wrong',
         });
       }
+      // creating session and issuing tokens
       const userId = user._id;
-      const newSession = await Session.create({ userId });
-      const sessionId = newSession._id;
-      const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
-        expiresIn: '30m',
-      });
-      const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
-        expiresIn: '30d',
-      });
-      await Users.updateToken(userId, token);
+      const {
+        token,
+        refreshToken,
+        sessionId,
+      } = await createSessionAndIssueTokens(userId);
 
       return res.redirect(
         `${process.env.FRONTEND_URL}?user=${user.email}&token=${token}&refreshToken=${refreshToken}&sid=${sessionId}`,
@@ -334,17 +310,14 @@ const googleRedirect = async (req, res, next) => {
         password: process.env.GOOGLE_AUTH_PASSWORD,
       });
       const regUser = await Users.findByEmail(email);
+      // creating session and issuing tokens
       const userId = regUser._id;
-      const newSession = await Session.create({ userId });
-      const sessionId = newSession._id;
-      const token = jwt.sign({ userId, sessionId }, SECRET_KEY, {
-        expiresIn: '30m',
-      });
-      const refreshToken = jwt.sign({ userId, sessionId }, REFRESH_SECRET_KEY, {
-        expiresIn: '30d',
-      });
-      await Users.updateToken(userId, token);
-      
+      const {
+        token,
+        refreshToken,
+        sessionId,
+      } = await createSessionAndIssueTokens(userId);
+
       return res.redirect(
         `${process.env.FRONTEND_URL}?user=${newUser.email}&token=${token}&refreshToken=${refreshToken}&sid=${sessionId}`,
       );
