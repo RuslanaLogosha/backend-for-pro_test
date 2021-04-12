@@ -65,6 +65,7 @@ async function getTheoryResults(req, res, next) {
       status: Status.SUCCESS,
       code: HttpCode.OK,
       data: {
+        testType: 'Theory',
         totalAnswersCount: String(checkedResults.length),
         correctAnswersCount: String(correctAnswersCount.length),
       },

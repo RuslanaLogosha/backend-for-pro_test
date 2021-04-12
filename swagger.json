@@ -477,6 +477,10 @@
       "QuizCheckResponse": {
         "type": "object",
         "properties": {
+          "testType": {
+            "type": "string",
+            "description": "Test type"
+          },
           "totalAnswers": {
             "type": "string",
             "description": "Count of total answers"
