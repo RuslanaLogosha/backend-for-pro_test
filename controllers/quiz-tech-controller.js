@@ -65,6 +65,7 @@ async function getTechResults(req, res, next) {
       status: Status.SUCCESS,
       code: HttpCode.OK,
       data: {
+        testType: 'Tech',
         totalAnswersCount: String(checkedResults.length),
         correctAnswersCount: String(correctAnswersCount.length),
       },
