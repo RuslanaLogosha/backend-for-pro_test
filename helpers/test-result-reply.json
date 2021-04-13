@@ -1,0 +1,67 @@
+[
+  {
+    "id": "0",
+    "aboutResultTitle": "Oh, no!",
+    "aboutResultSubtitle": "You must go over all materials again."
+  },
+  {
+    "id": "1",
+    "aboutResultTitle": "Ouch!",
+    "aboutResultSubtitle": "You tried, but you better go over the materials again."
+  },
+  {
+    "id": "2",
+    "aboutResultTitle": "Ouch!",
+    "aboutResultSubtitle": "You tried, but you better go over the materials again."
+  },
+  {
+    "id": "3",
+    "aboutResultTitle": "That’s better",
+    "aboutResultSubtitle": "Keep working on test. You’re improving."
+  },
+  {
+    "id": "4",
+    "aboutResultTitle": "That’s better",
+    "aboutResultSubtitle": "Keep working on test. You’re improving."
+  },
+  {
+    "id": "5",
+    "aboutResultTitle": "Not bad!",
+    "aboutResultSubtitle": "But you still need to learn some materials."
+  },
+  {
+    "id": "6",
+    "aboutResultTitle": "Not bad!",
+    "aboutResultSubtitle": "But you still need to learn some materials."
+  },
+  {
+    "id": "7",
+    "aboutResultTitle": "Good work!",
+    "aboutResultSubtitle": "You’re on the right track now!"
+  },
+  {
+    "id": "8",
+    "aboutResultTitle": "Good work!",
+    "aboutResultSubtitle": "You’re on the right track now!"
+  },
+  {
+    "id": "9",
+    "aboutResultTitle": "Great!",
+    "aboutResultSubtitle": "One more time and you’ll have it."
+  },
+  {
+    "id": "10",
+    "aboutResultTitle": "Great!",
+    "aboutResultSubtitle": "One more time and you’ll have it."
+  },
+  {
+    "id": "11",
+    "aboutResultTitle": "Great!",
+    "aboutResultSubtitle": "One more time and you’ll have it."
+  },
+  {
+    "id": "12",
+    "aboutResultTitle": "Wow! Congratulations!",
+    "aboutResultSubtitle": "Nothing can stop you now."
+  }
+]

@@ -482,12 +482,28 @@
             "description": "Test type"
           },
           "totalAnswers": {
-            "type": "string",
+            "type": "number",
             "description": "Count of total answers"
           },
           "correctAnswers": {
-            "type": "string",
+            "type": "number",
             "description": "Count of correct answers"
+          },
+          "correctPercentage": {
+            "type": "number",
+            "description": "Percentage of correct answers"
+          },
+          "incorrectPercentage": {
+            "type": "number",
+            "description": "Percentage of incorrect answers"
+          },
+          "aboutResultTitle": {
+            "type": "string",
+            "description": "Title, describing achieved result"
+          },
+          "aboutResultSubtitle": {
+            "type": "string",
+            "description": "Text, describing achieved result"
           }
         }
       }
