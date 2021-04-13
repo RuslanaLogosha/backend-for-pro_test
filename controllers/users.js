@@ -243,7 +243,7 @@ const googleRedirect = async (req, res, next) => {
       data: {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: `${process.env.BASE_URL}/users/auth/google-redirect`,
+        redirect_uri: `https://backend-for-pro-test.herokuapp.com/users/auth/google-redirect`,
         grant_type: 'authorization_code',
         code,
       },
