@@ -230,27 +230,6 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
-const googleAuth = async (_req, res, next) => {
-  try {
-    const stringifiedParams = queryString.stringify({
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      redirect_uri: `${process.env.BASE_URL}/users/auth/google-redirect`,
-      scope: [
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-      ].join(' '),
-      response_type: 'code',
-      access_type: 'offline',
-      prompt: 'consent',
-    });
-    return res.redirect(
-      `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`,
-    );
-  } catch (e) {
-    next(e);
-  }
-};
-
 const googleRedirect = async (req, res, next) => {
   try {
     const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
@@ -301,7 +280,7 @@ const googleRedirect = async (req, res, next) => {
       } = await createSessionAndIssueTokens(userId);
 
       return res.redirect(
-        `${process.env.FRONTEND_URL}?user=${user.email}&token=${token}&refreshToken=${refreshToken}&sid=${sessionId}`,
+        `${process.env.FRONTEND_URL}?email=${user.email}&token=${token}&refreshToken=${refreshToken}&sessionId=${sessionId}`,
       );
       //  registration new user, if BD don't have this email
     } else {
@@ -319,7 +298,7 @@ const googleRedirect = async (req, res, next) => {
       } = await createSessionAndIssueTokens(userId);
 
       return res.redirect(
-        `${process.env.FRONTEND_URL}?user=${newUser.email}&token=${token}&refreshToken=${refreshToken}&sid=${sessionId}`,
+        `${process.env.FRONTEND_URL}?email=${newUser.email}&token=${token}&refreshToken=${refreshToken}&sessionId=${sessionId}`,
       );
     }
   } catch (e) {
@@ -332,7 +311,6 @@ module.exports = {
   login,
   logout,
   getCurrentUser,
-  googleAuth,
   googleRedirect,
   refreshTokenPair,
 };

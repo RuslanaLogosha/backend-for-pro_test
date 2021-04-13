@@ -16,14 +16,13 @@ router
     userController.register,
   )
   .post(
-  '/auth/refresh',
-  validate.refreshToken,
-  userController.refreshTokenPair,
-);
+    '/auth/refresh',
+    validate.refreshToken,
+    userController.refreshTokenPair,
+  );
 
 router
   .get('/current', guard, userController.getCurrentUser)
-  .get('/auth/google', userController.googleAuth)
   .get('/auth/google-redirect', userController.googleRedirect);
 
 module.exports = router;
