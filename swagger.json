@@ -201,7 +201,7 @@
         }
       }
     },
-    "/users/auth/google": {
+    "/users/auth/google-redirect": {
       "get": {
         "tags": ["User"],
         "summary": "Google authentication",
