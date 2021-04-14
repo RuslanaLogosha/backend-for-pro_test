@@ -201,7 +201,7 @@
         }
       }
     },
-    "/auth/google": {
+    "/users/auth/google": {
       "get": {
         "tags": ["User"],
         "summary": "Google authentication",
