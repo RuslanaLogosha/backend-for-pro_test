@@ -201,6 +201,22 @@
         }
       }
     },
+    "/auth/google": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Google authentication",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {}
+          },
+          "401": {
+            "description": "Registered with email and password",
+            "content": {}
+          }
+        }
+      }
+    },
     "/techquiz/questions": {
       "get": {
         "tags": ["TechQuiz"],
