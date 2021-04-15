@@ -260,17 +260,17 @@ const googleRedirect = async (req, res, next) => {
     const user = await Users.findByEmail(email);
     // login, if DB has this email
     if (user) {
-      const isValidPassword = await user.validPassword(
-        process.env.GOOGLE_AUTH_PASSWORD,
-      );
-      if (!isValidPassword) {
-        return res.status(HttpCode.UNAUTHORIZED).json({
-          status: Status.ERROR,
-          code: HttpCode.UNAUTHORIZED,
-          data: 'Unauthorized',
-          message: 'Email or password is wrong',
-        });
-      }
+      // const isValidPassword = await user.validPassword(
+      //   process.env.GOOGLE_AUTH_PASSWORD,
+      // );
+      // if (!isValidPassword) {
+      //   return res.status(HttpCode.UNAUTHORIZED).json({
+      //     status: Status.ERROR,
+      //     code: HttpCode.UNAUTHORIZED,
+      //     data: 'Unauthorized',
+      //     message: 'Email or password is wrong',
+      //   });
+      // }
       // creating session and issuing tokens
       const userId = user._id;
       const {
